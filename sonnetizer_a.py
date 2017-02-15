@@ -4,7 +4,7 @@ import re
 import nltk
 import operator
 import codecs
-# I added the following line based on extensive research and trial and error
+# I added the following line bsed on extensive research and trial and error
 # see the commit logs for details.
 from nltk import model
 from nltk.corpus import cmudict
@@ -315,8 +315,8 @@ def rhyme_finder(word):
 
 
 print "building content model..."
-estimator = lambda fdist, bins: LidstoneProbDist(fdist, 0.2)
-content_model = nltk.model.BaseNgramModel(3, w)
+# estimator = lambda fdist, bins: LidstoneProbDist(fdist, 0.2)
+content_model = nltk.model.LidstoneNgramModel(3, w)
 
 
 def generate():
