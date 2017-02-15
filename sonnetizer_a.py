@@ -3,6 +3,7 @@ import random
 import re
 import nltk
 import operator
+import codecs
 from nltk.corpus import cmudict
 from nltk.probability import LidstoneProbDist
 
@@ -12,7 +13,7 @@ e = cmudict.entries()
 d = cmudict.dict()
 
 print "importing source text..."
-f = open(book)
+f = codecs.open(book,"r","utf-8")
 print "reading source text..."
 t = f.read()
 print "tokenizing words..."
@@ -35,7 +36,7 @@ def make_word_list():
 			else:
 				word_list.append((i.lower(), d[i.lower()][0]))
 	return word_list
-	
+
 word_list = make_word_list()
 
 
@@ -45,7 +46,7 @@ def valid_words():
 	for (x, y) in word_list:
 		vw.append(x)
 	return vw
-	
+
 vw = valid_words()
 
 
@@ -58,7 +59,7 @@ def unique(s):
 		else:
 			pass
 	return u
-    
+
 word_list_u = unique(word_list)
 
 
@@ -81,14 +82,14 @@ def sylcount(s):
 				return len(sl1) - 1
 			else:
 				return len(sl0) - 1
-		
-		
+
+
 def line_sylcount(line):
 	count = 0
 	for word in line:
 		count += sylcount(word)
 	return count
-	
+
 
 def meter(word):
 	pron = d[word]
@@ -221,7 +222,7 @@ def meter(word):
 				if i == 1:
 					m.append('s')
 				if i == 2:
-					m.append('s')		
+					m.append('s')
 	return m
 
 
@@ -231,7 +232,7 @@ def strip_numbers(x):
 	xjx = ''.join(xl)
 	xlx = xjx.split('.')
 	return xlx
-	
+
 
 def last_stressed_vowel(word):
 	if len(d[word]) <= 1:
@@ -308,7 +309,7 @@ def rhyme_finder(word):
 			pass
 	rw = [i for i in rhyming_words if not i == word]
 	return rw
-	
+
 
 print "building content model..."
 estimator = lambda fdist, bins: LidstoneProbDist(fdist, 0.2)
@@ -340,98 +341,98 @@ def generate():
 		i.remove(i[-1])
 		i.remove(i[-1])
 	return lines
-	
-	
+
+
 def write():
 	sw1 = random.randint(0, len(w) - 50)
 	sw2 = sw1 + 50
 	starting_words = w[sw1:sw2]
-	
+
 	line_1 = content_model.generate(50, starting_words)
 	line_1 = line_1[-50:]
 	print ' '.join(line_1)
 	line_1a = raw_input('> ')
 	line_1a = nltk.word_tokenize(line_1a)
-	
+
 	line_2 = content_model.generate(50, line_1a)
 	print ' '.join(line_2)
 	line_2a = raw_input('> ')
 	line_2a = nltk.word_tokenize(line_2a)
-	
+
 	line_3 = content_model.generate(50, line_2a)
 	print ' '.join(line_3)
 	print '_' * 10
 	print ' '.join(rhyme_finder(line_1a[-1]))
 	line_3a = raw_input('> ')
 	line_3a = nltk.word_tokenize(line_3a)
-	
+
 	line_4 = content_model.generate(50, line_3a)
 	print ' '.join(line_4)
 	print '_' * 10
 	print ' '.join(rhyme_finder(line_2a[-1]))
 	line_4a = raw_input('> ')
 	line_4a = nltk.word_tokenize(line_4a)
-	
+
 	line_5 = content_model.generate(50, line_4a)
 	print ' '.join(line_5)
 	line_5a = raw_input('> ')
 	line_5a = nltk.word_tokenize(line_5a)
-	
+
 	line_6 = content_model.generate(50, line_5a)
 	print ' '.join(line_6)
 	line_6a = raw_input('> ')
 	line_6a = nltk.word_tokenize(line_6a)
-	
+
 	line_7 = content_model.generate(50, line_6a)
 	print ' '.join(line_7)
 	print '_' * 10
 	print ' '.join(rhyme_finder(line_5a[-1]))
 	line_7a = raw_input('> ')
 	line_7a = nltk.word_tokenize(line_7a)
-	
+
 	line_8 = content_model.generate(50, line_7a)
 	print ' '.join(line_8)
 	print '_' * 10
 	print ' '.join(rhyme_finder(line_6a[-1]))
 	line_8a = raw_input('> ')
 	line_8a = nltk.word_tokenize(line_8a)
-	
+
 	line_9 = content_model.generate(50, line_8a)
 	print ' '.join(line_9)
 	line_9a = raw_input('> ')
 	line_9a = nltk.word_tokenize(line_9a)
-	
+
 	line_10 = content_model.generate(50, line_9a)
 	print ' '.join(line_10)
 	line_10a = raw_input('> ')
 	line_10a = nltk.word_tokenize(line_10a)
-	
+
 	line_11 = content_model.generate(50, line_10a)
 	print ' '.join(line_11)
 	print '_' * 10
 	print ' '.join(rhyme_finder(line_9a[-1]))
 	line_11a = raw_input('> ')
 	line_11a = nltk.word_tokenize(line_11a)
-	
+
 	line_12 = content_model.generate(50, line_11a)
 	print ' '.join(line_12)
 	print '_' * 10
 	print ' '.join(rhyme_finder(line_10a[-1]))
 	line_12a = raw_input('> ')
 	line_12a = nltk.word_tokenize(line_12a)
-	
+
 	line_13 = content_model.generate(50, line_12a)
 	print ' '.join(line_13)
 	line_13a = raw_input('> ')
 	line_13a = nltk.word_tokenize(line_13a)
-	
+
 	line_14 = content_model.generate(50, line_13a)
 	print ' '.join(line_14)
 	print '_' * 10
 	print ' '.join(rhyme_finder(line_13a[-1]))
 	line_14a = raw_input('> ')
 	line_14a = nltk.word_tokenize(line_14a)
-	
+
 	return [line_1a, line_2a, line_3a, line_4a, line_5a, line_6a, line_7a, line_8a,
                 line_9a, line_10a, line_11a, line_12a, line_13a, line_14a]
 
@@ -475,7 +476,7 @@ def couplet(x, y, lines):
 	line_2.append(end_word_2)
 	return [line_1, line_2]
 
-	
+
 def couplet_checker():
 	lines = generate()
 	c1 = couplet(0, 2, lines)
@@ -520,11 +521,9 @@ def sonnetizer():
 	l12 = ' '.join(s[11])
 	l13 = ' '.join(s[12])
 	l14 = ' '.join(s[13])
-	sonnet = [l1, l2, l3, l4, l5, l6, l7, l8, 
+	sonnet = [l1, l2, l3, l4, l5, l6, l7, l8,
                   l9, l10, l11, l12, l13, l14]
 	return '\n' + '\n'.join(sonnet) + '\n'
 
 sonnet = sonnetizer()
 print sonnet
-	
-		
