@@ -2,8 +2,9 @@ from sys import argv
 import random
 import re
 import nltk
-import roman
+# import roman
 import operator
+import codecs
 from nltk.corpus import cmudict
 from nltk.corpus import wordnet as wn
 from nltk.stem.snowball import SnowballStemmer
@@ -31,8 +32,8 @@ d = cmudict.dict()
 
 st = SnowballStemmer("english")
 
-banned_end_words = ['the', 'a', 'an', 'at', 'been', 'in', 'of', 'to', 'by', 'my', 'too', 'not', 
-                    'and', 'but', 'or', 'than', 'then', 'no', 'o', 'for', 'so', 'which', 'their', 
+banned_end_words = ['the', 'a', 'an', 'at', 'been', 'in', 'of', 'to', 'by', 'my', 'too', 'not',
+                    'and', 'but', 'or', 'than', 'then', 'no', 'o', 'for', 'so', 'which', 'their',
                     'on', 'your', 'as', 'has', 'what', 'is', 'nor', 'i', 'that', 'am', 'be', 'and',
                     'with', 'it', 'is', 'will', 'in', 'its', 'of', 'we', 'was', 'were', 'have',
                     'you', 'do', 'had', 'whose', 'while', 'because']
@@ -41,7 +42,7 @@ banned_word_combos = [['the', 'and', 'the'], ['at', 'to'], ['around', 'about'], 
 
 if show_diagnostics.lower() == 'y':
     print "importing source text..."
-f = open(book)
+f = codecs.open(book,"r","utf-8")
 if show_diagnostics.lower() == 'y':
     print "reading source text..."
 t = f.read()
@@ -66,8 +67,8 @@ def remove_ml_words():
             else:
                 pass
     return signal
-                
-#w = remove_ml_words() 
+
+#w = remove_ml_words()
 
 
 def make_word_list():
@@ -87,7 +88,7 @@ def make_word_list():
             else:
                 word_list.append((i.lower(), d[i.lower()][0]))
     return word_list
-    
+
 word_list = make_word_list()
 
 
@@ -98,7 +99,7 @@ def valid_words():
     for (x, y) in word_list:
         vw.append(x)
     return vw
-    
+
 vw = valid_words()
 vw_u = list(set(vw))
 
@@ -111,7 +112,7 @@ def unique(s):
         else:
             pass
     return u
-    
+
 word_list_u = unique(word_list)
 
 
@@ -143,14 +144,14 @@ def sylcount(s):
                 return len(sl1) - 1
             else:
                 return len(sl0) - 1
-        
-        
+
+
 def line_sylcount(line):
     count = 0
     for word in line:
         count += sylcount(word)
     return count
-    
+
 
 def meter(word):
     pron = d[word]
@@ -283,7 +284,7 @@ def meter(word):
                 elif i == 1:
                     m.append('s')
                 elif i == 2:
-                    m.append('s')       
+                    m.append('s')
     return m
 
 
@@ -402,7 +403,7 @@ if contains_rhyme(rhyme_scheme) or "natural" in rhyme_scheme.lower():
         rhyme_freq[len(rhyme_dict[word])].append(word)
 else:
     pass
-    
+
 
 if show_diagnostics.lower() == 'y':
     print "building content model..."
@@ -458,7 +459,7 @@ def plagiarism_check(sonnet):
 
 def line_syn_replace(line):
     pos = nltk.pos_tag(line)
-    nvaa = ['NN', 'NNS', 'NNP', 'NNPS', 'VB', 'VBD', 'VBG', 'VBN', 
+    nvaa = ['NN', 'NNS', 'NNP', 'NNPS', 'VB', 'VBD', 'VBG', 'VBN',
             'VBP', 'VBZ', 'JJ', 'JJR', 'JJS']
     candidates = []
     for h in range(len(pos)):
@@ -503,9 +504,9 @@ def line_syn_replace(line):
                 pass
         synonym = random.choice(syn_candidates)
         line[word_index] = synonym
-    
+
     # if natural line breaks desired, update rhyming dicts...
-    
+
     if "natural" in rhyme_scheme.lower():
         if ' ' in synonym:
             synonym = synonym.split(' ')
@@ -529,7 +530,7 @@ def line_syn_replace(line):
                 else:
                     rhyme_counts.append(0)
                     rhyme_freq[0] = [w]
-    
+
     return line
 
 
@@ -713,13 +714,13 @@ def line_length_counter(b, word_list):
         lls.append(b[i] - b[i-1])
     lls.append(len(word_list) - b[-1])
     return lls
-    
+
 
 def natural_breaks(sonnet):
     all_words = []
     for line in sonnet:
         all_words += line
-    
+
     for i in range(len(all_words)):
         if ' ' in all_words[i]:
             spl = all_words[i].split(' ')
@@ -728,14 +729,14 @@ def natural_breaks(sonnet):
                 all_words.insert(i+j, spl[j])
         else:
             pass
-    
+
     rhyme_locs = [rhyme_loc(w, all_words) for w in all_words]
     #slant_rhyme_locs = [slant_rhyme_loc(w, all_words) for w in all_words]
     noun_locs = noun_loc(all_words)
-    
+
     breaks = []
     line_lengths = [len(all_words)]
-    
+
     if any(bool(i) for i in rhyme_locs):
         for j in rhyme_locs:
             if bool(j):
@@ -746,12 +747,12 @@ def natural_breaks(sonnet):
         line_lengths = line_length_counter(breaks, all_words)
     else:
         pass
-        
+
     #if max(line_lengths) <= len(all_words) / (len(sonnet) / 2):
     #    break
     #else:
     #    pass
-    
+
     #if any(bool(i) for i in slant_rhyme_locs):
     #    for j in slant_rhyme_locs:
     #        if bool(j):
@@ -762,12 +763,12 @@ def natural_breaks(sonnet):
     #    line_lengths = line_length_counter(breaks, all_words)
     #else:
     #    pass
-    #    
+    #
     #if max(line_lengths) <= len(all_words) / (len(sonnet) / 2):
     #    break
     #else:
     #    pass
-    
+
     # maybe tweak this number...
 
     if len(breaks) <= (len(sonnet) / 2):
@@ -775,7 +776,7 @@ def natural_breaks(sonnet):
     else:
         pass
     breaks = sorted(list(set(breaks)))
-    
+
     #if breaks[-1] > len(all_words) - 4:
     #    breaks = breaks[:-1]
     #else:
@@ -858,9 +859,9 @@ def sonnetizer():
         title = sw()
         s = generate_sonnet(title)
     s = plagiarism_syn_replace(s)
-    
+
     # start of original plagarism checker...
-    
+
     #s = plagiarism_check(s)
     #line_count = len(s)
     #while line_count < len(rhyme_scheme):
@@ -868,11 +869,11 @@ def sonnetizer():
     #    s = plagarism_checker(s)
     #    line_count = len(s)
     #s = s[:len(rhyme_scheme)]
-    
+
     # ...end of original plagarism checker
-    
+
     s = end_words(s)
-    
+
     if "natural" in rhyme_scheme:
         s = natural_breaks(s)
     else:

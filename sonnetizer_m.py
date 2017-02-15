@@ -2,8 +2,9 @@ from sys import argv
 import random
 import re
 import nltk
-import roman
+# import roman
 import operator
+import codecs
 from nltk.corpus import cmudict
 from nltk.probability import LidstoneProbDist
 
@@ -12,12 +13,12 @@ script, book = argv
 e = cmudict.entries()
 d = cmudict.dict()
 
-banned_end_words = ['the', 'a', 'an', 'at', 'been', 'in', 'of', 'to', 'by', 'my', 'too', 'not', 
-                    'and', 'but', 'or', 'than', 'then', 'no', 'o', 'for', 'so', 'which', 'their', 
+banned_end_words = ['the', 'a', 'an', 'at', 'been', 'in', 'of', 'to', 'by', 'my', 'too', 'not',
+                    'and', 'but', 'or', 'than', 'then', 'no', 'o', 'for', 'so', 'which', 'their',
                     'on', 'your', 'as', 'has', 'what', 'is', 'nor', 'i']
 
 print "importing source text..."
-f = open(book)
+f = codecs.open(book,"r","utf-8")
 print "reading source text..."
 t = f.read()
 print "tokenizing words..."
@@ -40,7 +41,7 @@ def make_word_list():
 			else:
 				word_list.append((i.lower(), d[i.lower()][0]))
 	return word_list
-	
+
 word_list = make_word_list()
 
 
@@ -50,7 +51,7 @@ def valid_words():
 	for (x, y) in word_list:
 		vw.append(x)
 	return vw
-	
+
 vw = valid_words()
 
 
@@ -63,7 +64,7 @@ def unique(s):
 		else:
 			pass
 	return u
-    
+
 word_list_u = unique(word_list)
 
 
@@ -86,14 +87,14 @@ def sylcount(s):
 				return len(sl1) - 1
 			else:
 				return len(sl0) - 1
-		
-		
+
+
 def line_sylcount(line):
 	count = 0
 	for word in line:
 		count += sylcount(word)
 	return count
-	
+
 
 def meter(word):
 	pron = d[word]
@@ -226,7 +227,7 @@ def meter(word):
 				if i == 1:
 					m.append('s')
 				if i == 2:
-					m.append('s')		
+					m.append('s')
 	return m
 
 
@@ -236,7 +237,7 @@ def strip_numbers(x):
 	xjx = ''.join(xl)
 	xlx = xjx.split('.')
 	return xlx
-	
+
 
 def last_stressed_vowel(word):
 	if len(d[word]) <= 1:
@@ -324,8 +325,8 @@ content_model = nltk.NgramModel(3, vw, estimator=estimator)
 def sw():
 	sw1 = random.randint(0, len(vw) - 1)
 	return [vw[sw1]]
-	
-	
+
+
 def generate_word(prior_words):
 	starting_words = sw()
 	word_y = content_model.generate(1, starting_words + prior_words)
@@ -359,7 +360,7 @@ def generate_word(prior_words):
 				word_y = word_y[-1]
 				m_word_y = meter(word_y)
 	return word_y
-	
+
 
 
 def generate_line(x):
@@ -377,7 +378,7 @@ def generate_line(x):
 			m_word_1 = meter(word_1)
 		line.append(word_1)
 		count += sylcount(word_1)
-		
+
 		word_2 = generate_word([word_1])
 		line.append(word_2)
 		count += sylcount(word_2)
@@ -385,7 +386,7 @@ def generate_line(x):
 			break
 		else:
 			pass
-		
+
 		word_3 = generate_word([word_1, word_2])
 		line.append(word_3)
 		count += sylcount(word_3)
@@ -393,7 +394,7 @@ def generate_line(x):
 			break
 		else:
 			pass
-		
+
 		word_4 = generate_word([word_1, word_2, word_3])
 		line.append(word_4)
 		count += sylcount(word_4)
@@ -401,7 +402,7 @@ def generate_line(x):
 			break
 		else:
 			pass
-		
+
 		word_5 = generate_word([word_1, word_2, word_3, word_4])
 		line.append(word_5)
 		count += sylcount(word_5)
@@ -409,7 +410,7 @@ def generate_line(x):
 			break
 		else:
 			pass
-		
+
 		word_6 = generate_word([word_1, word_2, word_3, word_4, word_5])
 		line.append(word_6)
 		count += sylcount(word_6)
@@ -417,35 +418,35 @@ def generate_line(x):
 			break
 		else:
 			pass
-					
+
 		word_7 = generate_word([word_1, word_2, word_3, word_4, word_5, word_6])
 		line.append(word_7)
 		count += sylcount(word_7)
 		if count >= 10:
 			break
 		else:
-			pass		
-		
+			pass
+
 		word_8 = generate_word([word_1, word_2, word_3, word_4, word_5, word_6, word_7])
 		line.append(word_8)
 		count += sylcount(word_8)
 		if count >= 10:
 			break
 		else:
-			pass		
-		
+			pass
+
 		word_9 = generate_word([word_1, word_2, word_3, word_4, word_5, word_6, word_7, word_8])
 		line.append(word_9)
 		count += sylcount(word_9)
 		if count >= 10:
 			break
 		else:
-			pass		
-		
+			pass
+
 		word_10 = generate_word([word_1, word_2, word_3, word_4, word_5, word_6, word_7, word_8, word_9])
 		line.append(word_10)
 		break
-		
+
 	return line
 
 
@@ -506,7 +507,7 @@ def couplet(x, y, lines):
 	line_2.append(end_word_2)
 	return [line_1, line_2]
 
-	
+
 def couplet_checker():
 	lines = generate_sonnet()
 	c1 = couplet(0, 2, lines)
@@ -551,14 +552,12 @@ def sonnetizer():
 	l12 = ' '.join(s[11])
 	l13 = ' '.join(s[12])
 	l14 = ' '.join(s[13])
-	sonnet = [l1, l2, l3, l4, l5, l6, l7, l8, 
+	sonnet = [l1, l2, l3, l4, l5, l6, l7, l8,
                   l9, l10, l11, l12, l13, l14]
 	return '\n'.join(sonnet) + '\n\n'
 
 
 print "assembling sonnets...\n\n"
 for i in range(10):
-    print roman.toRoman(i+1) + '.'
+#    print roman.toRoman(i+1) + '.'
     print sonnetizer()
-	
-		
