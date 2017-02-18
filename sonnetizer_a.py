@@ -5,7 +5,7 @@ import nltk
 import operator
 import codecs
 from nltk.model import build_vocabulary, NgramCounter
-# I added the following line bsed on extensive research and trial and error
+# I added the following line based on extensive research and trial and error
 # see the commit logs for details.
 # from nltk import model
 # I also added this, after getting a million
@@ -14,22 +14,41 @@ from nltk.corpus import cmudict
 from nltk.probability import LidstoneProbDist
 
 script, book = argv
+# This says, "the script and 'book' (i.e. text file), in that order, are the
+# arguments for this program."
 
 e = cmudict.entries()
+# Returns:	the cmudict lexicon as a list of entries
+# containing (word, transcriptions) tuples.
 d = cmudict.dict()
+# Returns:	the cmudict lexicon as a dictionary, whose keys are
+# lowercase words and whose values are lists of pronunciations.
 
 print "importing source text..."
 f = codecs.open(book,"r","utf-8")
+# Using the codecs module, open 'book' so that the weird characters don't
+# choke everything in python 2.7 (in which this script was written in 2013)
 print "reading source text..."
 t = f.read()
+# As "t" read the file that you've just opened.
 print "tokenizing words..."
 w = nltk.word_tokenize(t)
+# as 'w' (for 'words') use nltk to actually break that text up into words.
 
 
 def make_word_list():
 	print "making word list..."
 	word_list = []
+	# establishing an empty array called "word_list"
 	for i in w:
+		# and for each item in all the 'w's that you've made...
+		# I think what this code block is doing is comparing each word ('i')
+		# to the CMU Dict and if there's not a match, skip it. If there is a
+		# match, but if the word ('i') contains an 's or a period, skip it.
+		# If it's just a normal matching word, append it to the word_list and
+		# with it append the word from CMU dict. So they'll be the same? AHH!
+		# If there isn't a match then there's just one word on the line,
+		# so valid_words makes more sense now.
 		try:
 			d[i.lower()]
 		except KeyError:
@@ -52,9 +71,13 @@ def valid_words():
 	for (x, y) in word_list:
 		vw.append(x)
 	return vw
-
+# to create a list of valid words, find each (x, y) pair created in the
+# word_list above -- that is, each line (?) that has two things on it -- and
+# append the first of those (i.lower()) to the valid_words array.
 vw = valid_words()
 
+print "     Count of Valid Words: " + count(vw)
+# for grins I want to print the numbers of valid words.
 
 def unique(s):
 	print "making unique word list..."
@@ -65,9 +88,12 @@ def unique(s):
 		else:
 			pass
 	return u
-
+# now we're creating a list of words with no duplicates, so that if a word is
+# is in the 'unique' list already, it isn't included.
 word_list_u = unique(word_list)
 
+print "     Count of unique words: " + count(word_list_u)
+# for grins I want to print the numbers of unique words. 
 
 def sylcount(s):
 	try:
