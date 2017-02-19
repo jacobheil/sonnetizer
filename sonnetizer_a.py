@@ -2,16 +2,16 @@ from sys import argv
 import random
 import re
 import nltk
-import operator
-import codecs
-from nltk.model import build_vocabulary, NgramCounter
-# I added the following line based on extensive research and trial and error
-# see the commit logs for details.
-# from nltk import model
-# I also added this, after getting a million
-# errors about ngrams --> from nltk.util import ngrams
+import operator # <-- I'm betting I don't need this.
+import codecs 	# <-- Imported this to overcome formatting, I think this might
+				# have been handled by $ import compat
+from nltk.model import build_vocabulary, count_ngrams, ngram
+from nltk.model import MLENgramModel # Replaces nltk.probability below
+# Imported these ^^^ after reading:
+#     http://stackoverflow.com/questions/37504391/train-ngrammodel-in-python
+# from nltk import model # <-- I might need this, not sure yet
 from nltk.corpus import cmudict
-from nltk.probability import LidstoneProbDist
+# from nltk.probability import LidstoneProbDist # <-- betting I don't need this.
 
 script, book = argv
 # This says, "the script and 'book' (i.e. text file), in that order, are the
@@ -76,7 +76,7 @@ def valid_words():
 # append the first of those (i.lower()) to the valid_words array.
 vw = valid_words()
 
-print "     Count of Valid Words: " + count(vw)
+print "     Count of Valid Words: " + str(len(vw))
 # for grins I want to print the numbers of valid words.
 
 def unique(s):
@@ -92,8 +92,8 @@ def unique(s):
 # is in the 'unique' list already, it isn't included.
 word_list_u = unique(word_list)
 
-print "     Count of unique words: " + count(word_list_u)
-# for grins I want to print the numbers of unique words. 
+print "     Count of unique words: " + str(len(word_list_u))
+# for grins I want to print the numbers of unique words.
 
 def sylcount(s):
 	try:
@@ -342,12 +342,17 @@ def rhyme_finder(word):
 	rw = [i for i in rhyming_words if not i == word]
 	return rw
 
-
 print "building content model..."
-# estimator = lambda fdist, bins: LidstoneProbDist(fdist, 0.2)
-content_model = nltk.model.ngram.NgramModelCounter(.2, w)
+vocab = build_vocabulary(3, w)
+counts = count_ngrams(3, vocab, t)
+content_model = MLENgramModel(counts)
 
+'''
+print "building content model..."
+estimator = lambda fdist, bins: LidstoneProbDist(fdist, 0.2)
+content_model = nltk.NgramModel(3, w, estimator=estimator)
 
+'''
 def generate():
 	sw1 = random.randint(0, len(vw) - 2)
 	sw2 = sw1 + 2
